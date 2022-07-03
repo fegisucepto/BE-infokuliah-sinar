@@ -4,7 +4,6 @@ const { User, Course, User_Course, UserIdentity } = require('../models');
 const convertToRupiah = require('../helper/convertToRp');
 const useridentity = require('../models/useridentity');
 
-
 class HomeController {
   static async courses(req, res, next) {
     try {
@@ -21,7 +20,6 @@ class HomeController {
   }
   static async buy(req, res, next) {
     try {
-      //   let id = req.session.iduser;
       const CourseId = req.params.id;
       const coursesList = await User_Course.create({
         CourseId: +CourseId,
