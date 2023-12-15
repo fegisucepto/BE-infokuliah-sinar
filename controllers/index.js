@@ -53,6 +53,26 @@ class Controller {
       next(err);
     }
   }
+  static async profill(req, res, next) {
+    try {
+      const profill = await User.findOne({
+        where: {
+          id: +req.params.id,
+        },
+      });
+      if (!profill) {
+        throw new Error('User not found');
+      }
+
+      res.status(200).json({
+        statusCode: 200,
+        message: 'This Profill Has been Show',
+        data: profill,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 module.exports = Controller;

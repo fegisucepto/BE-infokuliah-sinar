@@ -1,8 +1,8 @@
 {
   "development": {
     "username": "postgres",
-    "password": "seginimcity",
-    "database": "infokuliah-server",
+    "password": "fegikayaraya",
+    "database": "kampus-terbaik-new",
     "host": "127.0.0.1",
     "dialect": "postgres"
   },
