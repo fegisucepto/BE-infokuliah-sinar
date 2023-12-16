@@ -61,26 +61,6 @@ class HomeController {
     }
   }
   
-  
-
-  // static async mycourses(req, res, next) {
-  //   try {
-  //     const mycoursesList = await User_Course.findAll({
-  //     });
-  //     const mycorses = await Course.findAll({
-  //     })
-  //     const datacorses = mycoursesList.CourseId === mycorses.id
-
-  //     if (datacorses === true) {
-  //       res.status(200).json({
-  //         statusCode: 200,
-  //         data: mycoursesList,
-  //       });
-  //     }
-  //   } catch (err) {
-  //     next(err);
-  //   }
-  // }
   static async mycourses(req, res, next) {
     try {
       const userId = req.loggedUser.id; // Ambil ID pengguna dari req.loggedUser
