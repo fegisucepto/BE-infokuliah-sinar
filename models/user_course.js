@@ -7,7 +7,10 @@ module.exports = (sequelize, DataTypes) => {
     
     static associate(models) {
       // define association here
-      
+      User_Course.belongsTo(models.Course, {
+        foreignKey: 'CourseId',
+        // as: 'course', // alias untuk asosiasi
+      });
     }
   }
   User_Course.init({

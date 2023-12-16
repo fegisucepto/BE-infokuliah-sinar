@@ -63,21 +63,51 @@ class HomeController {
   
   
 
+  // static async mycourses(req, res, next) {
+  //   try {
+  //     const mycoursesList = await User_Course.findAll({
+  //     });
+  //     const mycorses = await Course.findAll({
+  //     })
+  //     const datacorses = mycoursesList.CourseId === mycorses.id
+
+  //     if (datacorses === true) {
+  //       res.status(200).json({
+  //         statusCode: 200,
+  //         data: mycoursesList,
+  //       });
+  //     }
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // }
   static async mycourses(req, res, next) {
     try {
-      const mycoursesList = await User_Course.findAll({
+      const userId = req.loggedUser.id; // Ambil ID pengguna dari req.loggedUser
+  
+      // Ambil daftar kursus yang dimiliki oleh pengguna berdasarkan ID
+      const userCourses = await User_Course.findAll({
+        where: { UserId: userId },
+        include: [{ model: Course, attributes: ['id', 'name', 'description', 'price', 'imageURL'] }],
       });
-      const mycorses = await Course.findAll({
-      })
-      const datacorses = mycoursesList.CourseId === mycorses.id
-      res.status(200).json({
-        statusCode: 200,
-        data: datacorses,
-      });
+  
+      if (userCourses.length > 0) {
+        res.status(200).json({
+          statusCode: 200,
+          data: userCourses,
+        });
+      } else {
+        res.status(404).json({
+          statusCode: 404,
+          message: 'Tidak ada kursus yang ditemukan untuk pengguna ini.',
+        });
+      }
     } catch (err) {
       next(err);
     }
   }
+  
+  
   
   static async addCourse(req, res, next) {
     try {
