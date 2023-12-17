@@ -53,26 +53,87 @@ class Controller {
       next(err);
     }
   }
-  static async profill(req, res, next) {
-    try {
-      const profill = await User.findOne({
-        where: {
-          id: +req.params.id,
-        },
-      });
-      if (!profill) {
-        throw new Error('User not found');
-      }
+ 
+static async  getProfile(req, res) {
+  try {
+    const loggedInUserId = req.loggedUser.id; // Mendapatkan ID pengguna dari token
 
-      res.status(200).json({
-        statusCode: 200,
-        message: 'This Profill Has been Show',
-        data: profill,
-      });
-    } catch (err) {
-      next(err);
+    const userProfile = await User.findOne({ where: { id: loggedInUserId } });
+
+    if (!userProfile) {
+      return res.status(404).json({ message: 'User profile not found' });
     }
+
+    // Mengirim data profil pengguna sebagai respons
+    res.status(200).json({
+      message: 'User profile retrieved successfully',
+      data: userProfile,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal Server Error' });
   }
+}
+
+// ...
+
+static async updateEmail(req, res) {
+  try {
+    const { email } = req.body;
+    const loggedInUserId = req.loggedUser.id;
+
+    const updatedUser = await User.findByPk(loggedInUserId);
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    updatedUser.email = email;
+    await updatedUser.save();
+
+    res.status(200).json({
+      statusCode: 200,
+      message: 'Email updated successfully',
+      data: {
+        id: updatedUser.id,
+        email: updatedUser.email,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+}
+
+static async updatePassword(req, res) {
+  try {
+    const { password } = req.body;
+    const loggedInUserId = req.loggedUser.id;
+
+    const updatedUser = await User.findByPk(loggedInUserId);
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Hashing password baru dengan fungsi hashPassword dari helper
+    const hashedPassword = await hashPassword(password);
+    updatedUser.password = hashedPassword;
+
+    await updatedUser.save();
+
+    res.status(200).json({
+      statusCode: 200,
+      message: 'Password updated successfully',
+      data: {
+        id: updatedUser.id,
+        email: updatedUser.email,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+}
+
+// ...
+
+  
 }
 
 module.exports = Controller;

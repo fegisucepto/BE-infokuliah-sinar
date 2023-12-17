@@ -6,7 +6,6 @@ const useridentity = require('../models/useridentity');
 // const UserCourse = require('../models/User_Course');
 // const User = require('../models/user')
 const jwt = require('jsonwebtoken');
-
 class HomeController {
   static async courses(req, res, next) {
     try {
@@ -79,7 +78,7 @@ class HomeController {
       } else {
         res.status(404).json({
           statusCode: 404,
-          message: 'Tidak ada kursus yang ditemukan untuk pengguna ini.',
+          message: 'Anda belum membeli satu pun kursus.',
         });
       }
     } catch (err) {
@@ -166,6 +165,23 @@ class HomeController {
   }
 }
 
-// destroy
+// const getProfile = async (req, res) => {
+//   try {
+//     const userProfile = await UserProfile.findOne({ user_id: req.user.id }); // Contoh pengambilan profil dari database dengan ID pengguna yang terautentikasi
+
+//     if (!userProfile) {
+//       return res.status(404).json({ message: 'Profil tidak ditemukan' });
+//     }
+//     res.status(200).json({ profile: userProfile });
+//   } catch (err) {
+//     console.error('Error fetching profile:', err);
+//     res.status(500).json({ message: 'Terjadi kesalahan saat mengambil profil' });
+//   }
+// };
+
+// module.exports = {
+//   getProfile,
+// };
+
 
 module.exports = HomeController;

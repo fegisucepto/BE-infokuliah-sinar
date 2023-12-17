@@ -49,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
     hooks: {
       beforeCreate(instance, options) {
         let kata = ""
-        var salt = bcrypt.genSaltSync(8);
+        var salt = bcrypt.genSaltSync(10);
         var hash = bcrypt.hashSync(instance.password, salt);
         instance.password = hash
         kata = instance.email.split("@")[1]

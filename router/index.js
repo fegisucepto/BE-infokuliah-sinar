@@ -10,7 +10,9 @@ router.post('/register', Controller.registrasi);
 router.post('/login', Controller.login);
 
 router.use(authentication);
-router.get('/profill/:id', Controller.profill);
+router.get('/profile', Controller.getProfile);
+router.put('/update/email', Controller.updateEmail)
+router.put('/update/password', Controller.updatePassword)
 
 router.get('/mycourses', HomeController.mycourses);
 router.use('/courses', require('./home.js'));

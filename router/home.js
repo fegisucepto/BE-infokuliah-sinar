@@ -7,7 +7,7 @@ router.get('/', HomeController.courses);
 router.post('/add', HomeController.addCourse);
 router.get('/:id', HomeController.cousesDetail);
 router.patch('/edit/:id', HomeController.editData);
-router.get('/buy/:id', HomeController.buy);
+router.post('/buy/:id', HomeController.buy);
 router.delete('/delete/:id', HomeController.delete);
 
 module.exports = router;
