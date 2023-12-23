@@ -5,6 +5,7 @@ const express = require('express');
 const router = express.Router();
 const authentication = require('../middlewares/authentication');
 const AlumniController = require('../controllers/AlumniController.js');
+const QuestionController = require('../controllers/questionController');
 
 router.post('/register', Controller.registrasi);
 router.post('/login', Controller.login);
@@ -17,6 +18,11 @@ router.put('/update/password', Controller.updatePassword)
 router.get('/mycourses', HomeController.mycourses);
 router.use('/courses', require('./home.js'));
 router.get('/alumni', AlumniController.alumni)
-// router.use('/alumni' , require ('.alumni.js'))
+router.get('/question', QuestionController.getQuestion);
+router.get('/question/remaining-time/:id', QuestionController.getRemainingTime);
+router.post('/submit-answer', QuestionController.submitAnswer);
+router.get('/question/calculate-score/:questionId', QuestionController.submitAnswer)
+
+
 
 module.exports = router;
