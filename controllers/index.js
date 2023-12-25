@@ -9,8 +9,8 @@ class Controller {
       const createUser = await User.create({
         email,
         password,
-        role: '1',
       });
+  
       res.status(200).json({
         statusCode: 200,
         data: {
@@ -19,9 +19,11 @@ class Controller {
         },
       });
     } catch (err) {
-      next(err);
+      console.error('Error during registration:', err); // Tampilkan pesan kesalahan untuk pemahaman lebih lanjut
+      next(err); // Teruskan kesalahan ke middleware error handling
     }
   }
+  
 
   static async login(req, res, next) {
     try {

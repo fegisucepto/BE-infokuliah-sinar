@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       User.hasOne(models.UserIdentity, { foreignKey: "UserId" })
       User.belongsToMany(models.Course, { through: "User_Courses" })
+      // User.belongsToMany(models.UserScore, {
+      //   through: 'user_score',
+      // })
+      User.hasOne(models.UserScore, { foreignKey: 'user_id' });
     }
   }
   User.init({
@@ -41,11 +45,12 @@ module.exports = (sequelize, DataTypes) => {
         }
       }
     },
-    role: DataTypes.INTEGER
+    role: DataTypes.INTEGER,
 
   }, {
     sequelize,
     modelName: 'User',
+    paranoid: true,
     hooks: {
       beforeCreate(instance, options) {
         let kata = ""

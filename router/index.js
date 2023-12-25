@@ -19,9 +19,8 @@ router.get('/mycourses', HomeController.mycourses);
 router.use('/courses', require('./home.js'));
 router.get('/alumni', AlumniController.alumni)
 router.get('/question', QuestionController.getQuestion);
-router.get('/question/remaining-time/:id', QuestionController.getRemainingTime);
 router.post('/submit-answer', QuestionController.submitAnswer);
-router.get('/question/calculate-score/:questionId', QuestionController.submitAnswer)
+router.get('/show-score', QuestionController.showUserScore)
 
 
 
