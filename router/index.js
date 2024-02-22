@@ -6,6 +6,7 @@ const router = express.Router();
 const authentication = require('../middlewares/authentication');
 const AlumniController = require('../controllers/AlumniController.js');
 const QuestionController = require('../controllers/questionController');
+const UserControllers = require ('../controllers/UsersControllers.js')
 
 router.post('/register', Controller.registrasi);
 router.post('/login', Controller.login);
@@ -18,9 +19,14 @@ router.put('/update/password', Controller.updatePassword)
 router.get('/mycourses', HomeController.mycourses);
 router.use('/courses', require('./home.js'));
 router.get('/alumni', AlumniController.alumni)
+router.get('/list-users', UserControllers.users)
 router.get('/question', QuestionController.getQuestion);
-router.post('/submit-answer', QuestionController.submitAnswer);
+router.get('/listquestion', QuestionController.ListQuestion);
+router.post('/submit-answers', QuestionController.submitAnswer);
+router.post('/update-answers', QuestionController.updateAnswer);
+router.post('/reset-score', QuestionController.resetScore);
 router.get('/show-score', QuestionController.showUserScore)
+
 
 
 

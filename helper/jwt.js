@@ -5,7 +5,9 @@ const KEY = process.env.KEY; // Pastikan variabel KEY telah diatur dalam variabe
 
 const addToken = (data) => {
   try {
-    return jwt.sign(data, KEY);
+    // Tambahkan expiresIn untuk mengatur waktu kedaluwarsa token (dalam contoh ini 1 jam)
+    // return jwt.sign(data, KEY, { expiresIn: '1h' });
+        return jwt.sign(data, KEY);
   } catch (error) {
     throw new Error('Gagal menambahkan token');
   }

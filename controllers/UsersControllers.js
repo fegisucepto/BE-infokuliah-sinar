@@ -1,14 +1,14 @@
 'use strict';
 const { Op } = require('sequelize');
-const { Alumni } = require('../models');
+const { User } = require('../models');
 
-  exports.alumni = async (req, res, next) => {
+  exports.users = async (req, res, next) => {
     try {
-      const alumniList = await Alumni.findAll({
+      const userList = await User.findAll({
       });
       res.status(200).json({
         statusCode: 200,
-        data: alumniList,
+        data: userList,
       });
     } catch (err) {
       next(err);
