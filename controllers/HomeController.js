@@ -9,8 +9,7 @@ const jwt = require('jsonwebtoken');
 class HomeController {
   static async courses(req, res, next) {
     try {
-      const coursesList = await Course.findAll({
-      });
+      const coursesList = await Course.findAll({});
       res.status(200).json({
         statusCode: 200,
         data: coursesList,
@@ -24,28 +23,28 @@ class HomeController {
     try {
       const courseId = req.params.id;
       const token = req.headers.authorization;
-  
+
       if (!token || !token.startsWith('Bearer ')) {
         return res.status(401).json({ message: 'Unauthorized: Format token bearer tidak valid' });
       }
-  
+
       const tokenValue = token.split(' ')[1];
-  
+
       // Lakukan verifikasi token untuk mendapatkan informasi pengguna
       jwt.verify(tokenValue, process.env.KEY, async (err, decoded) => {
         if (err) {
           console.error(err); // Tampilkan pesan kesalahan
           return res.status(401).json({ message: 'Unauthorized: Token bearer tidak valid' });
         }
-  
+
         const userId = decoded.id;
-  
+
         // Lanjutkan dengan proses pembelian kursus
-        const userCourse = await  User_Course.create({
+        const userCourse = await User_Course.create({
           UserId: userId,
-           CourseId: courseId,
+          CourseId: courseId,
         });
-  
+
         res.status(200).json({
           statusCode: 200,
           message: `Kursus dengan ID ${courseId} berhasil dibeli oleh pengguna dengan ID ${userId}`,
@@ -59,17 +58,17 @@ class HomeController {
       next(err);
     }
   }
-  
+
   static async mycourses(req, res, next) {
     try {
       const userId = req.loggedUser.id; // Ambil ID pengguna dari req.loggedUser
-  
+
       // Ambil daftar kursus yang dimiliki oleh pengguna berdasarkan ID
       const userCourses = await User_Course.findAll({
         where: { UserId: userId },
         include: [{ model: Course, attributes: ['id', 'name', 'description', 'price', 'imageURL'] }],
       });
-  
+
       if (userCourses.length > 0) {
         res.status(200).json({
           statusCode: 200,
@@ -85,9 +84,7 @@ class HomeController {
       next(err);
     }
   }
-  
-  
-  
+
   static async addCourse(req, res, next) {
     try {
       const body = req.body;
@@ -182,6 +179,5 @@ class HomeController {
 // module.exports = {
 //   getProfile,
 // };
-
 
 module.exports = HomeController;

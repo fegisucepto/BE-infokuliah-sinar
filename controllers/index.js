@@ -5,16 +5,20 @@ const { addToken } = require('../helper/jwt');
 class Controller {
   static async registrasi(req, res, next) {
     try {
-      const { email, password } = req.body;
+      const { email, password, firstName, lastName } = req.body;
       const createUser = await User.create({
+        firstName,
+        lastName,
         email,
         password,
       });
-  
+
       res.status(200).json({
         statusCode: 200,
         data: {
           id: createUser.id,
+          firstName: createUser.firstName,
+          lastName: createUser.lastName,
           email: createUser.email,
         },
       });
@@ -23,7 +27,6 @@ class Controller {
       next(err); // Teruskan kesalahan ke middleware error handling
     }
   }
-  
 
   static async login(req, res, next) {
     try {
@@ -31,111 +34,115 @@ class Controller {
       const checkUser = await User.findOne({
         where: { email },
       });
+
       if (!checkUser) {
         throw new Error('User not found');
       }
+
       const comparePassword = verifyPassword(password, checkUser.password);
 
       if (!comparePassword) {
-        throw new Error('User not found');
+        throw new Error('Invalid password');
       }
 
       const payloadUser = {
         id: checkUser.id,
         email: checkUser.email,
+        role: checkUser.role,
       };
+
       const tokenUser = addToken(payloadUser);
+
       res.status(200).json({
         statusCode: 200,
         data: {
           access_token: tokenUser,
+          role: payloadUser.role,
         },
       });
     } catch (err) {
       next(err);
     }
   }
- 
-static async  getProfile(req, res) {
-  try {
-    const loggedInUserId = req.loggedUser.id; // Mendapatkan ID pengguna dari token
 
-    const userProfile = await User.findOne({ where: { id: loggedInUserId } });
+  static async getProfile(req, res) {
+    try {
+      const loggedInUserId = req.loggedUser.id; // Mendapatkan ID pengguna dari token
 
-    if (!userProfile) {
-      return res.status(404).json({ message: 'User profile not found' });
+      const userProfile = await User.findOne({ where: { id: loggedInUserId } });
+
+      if (!userProfile) {
+        return res.status(404).json({ message: 'User profile not found' });
+      }
+
+      // Mengirim data profil pengguna sebagai respons
+      res.status(200).json({
+        message: 'User profile retrieved successfully',
+        data: userProfile,
+      });
+    } catch (error) {
+      res.status(500).json({ message: 'Internal Server Error' });
     }
-
-    // Mengirim data profil pengguna sebagai respons
-    res.status(200).json({
-      message: 'User profile retrieved successfully',
-      data: userProfile,
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Internal Server Error' });
   }
-}
 
-// ...
+  // ...
 
-static async updateEmail(req, res) {
-  try {
-    const { email } = req.body;
-    const loggedInUserId = req.loggedUser.id;
+  static async updateEmail(req, res) {
+    try {
+      const { email } = req.body;
+      const loggedInUserId = req.loggedUser.id;
 
-    const updatedUser = await User.findByPk(loggedInUserId);
-    if (!updatedUser) {
-      return res.status(404).json({ message: 'User not found' });
+      const updatedUser = await User.findByPk(loggedInUserId);
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      updatedUser.email = email;
+      await updatedUser.save();
+
+      res.status(200).json({
+        statusCode: 200,
+        message: 'Email updated successfully',
+        data: {
+          id: updatedUser.id,
+          email: updatedUser.email,
+        },
+      });
+    } catch (err) {
+      res.status(500).json({ message: 'Internal Server Error' });
     }
-
-    updatedUser.email = email;
-    await updatedUser.save();
-
-    res.status(200).json({
-      statusCode: 200,
-      message: 'Email updated successfully',
-      data: {
-        id: updatedUser.id,
-        email: updatedUser.email,
-      },
-    });
-  } catch (err) {
-    res.status(500).json({ message: 'Internal Server Error' });
   }
-}
 
-static async updatePassword(req, res) {
-  try {
-    const { password } = req.body;
-    const loggedInUserId = req.loggedUser.id;
+  static async updatePassword(req, res) {
+    try {
+      const { password } = req.body;
+      const loggedInUserId = req.loggedUser.id;
 
-    const updatedUser = await User.findByPk(loggedInUserId);
-    if (!updatedUser) {
-      return res.status(404).json({ message: 'User not found' });
+      const updatedUser = await User.findByPk(loggedInUserId);
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Hashing password baru dengan fungsi hashPassword dari helper
+      const hashedPassword = await hashPassword(password);
+      updatedUser.password = hashedPassword;
+
+      await updatedUser.save();
+
+      res.status(200).json({
+        statusCode: 200,
+        message: 'Password updated successfully',
+        data: {
+          id: updatedUser.id,
+          email: updatedUser.email,
+        },
+      });
+    } catch (err) {
+      res.status(500).json({ message: 'Internal Server Error' });
     }
-
-    // Hashing password baru dengan fungsi hashPassword dari helper
-    const hashedPassword = await hashPassword(password);
-    updatedUser.password = hashedPassword;
-
-    await updatedUser.save();
-
-    res.status(200).json({
-      statusCode: 200,
-      message: 'Password updated successfully',
-      data: {
-        id: updatedUser.id,
-        email: updatedUser.email,
-      },
-    });
-  } catch (err) {
-    res.status(500).json({ message: 'Internal Server Error' });
   }
-}
 
-// ...
-
-  
+  // ...
 }
 
 module.exports = Controller;

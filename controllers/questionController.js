@@ -3,11 +3,9 @@ const jwt = require('jsonwebtoken');
 const { Question, UserScore } = db;
 const { readPayload } = require('../helper/jwt');
 
-
 exports.ListQuestion = async (req, res, next) => {
   try {
-    const questionList = await Question.findAll({
-    });
+    const questionList = await Question.findAll({});
     res.status(200).json({
       statusCode: 200,
       data: questionList,
@@ -15,7 +13,51 @@ exports.ListQuestion = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-}
+};
+
+// exports.GetQuestionById = async (req, res, next) => {
+//   try {
+//     const { id } = req.params;
+//     const question = await Question.findByPk(id);
+
+//     if (!question) {
+//       // Jika pertanyaan dengan ID tertentu tidak ditemukan
+//       return res.status(404).json({
+//         statusCode: 404,
+//         message: 'Question not found',
+//       });
+//     }
+
+//     // Jika pertanyaan ditemukan, kirimkan sebagai respons
+//     res.status(200).json({
+//       statusCode: 200,
+//       data: question,
+//     });
+//   } catch (err) {
+//     next(err);
+//   }
+// };
+
+exports.GetQuestionById = async (req, res, next) => {
+  try {
+    const course = await Question.findOne({
+      where: {
+        id: +req.params.id,
+      },
+    });
+    if (course === null) {
+      throw new Error('error not found');
+    }
+
+    res.status(200).json({
+      statusCode: 200,
+      message: 'This Couses Has been Show',
+      data: course,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 exports.getQuestion = async (req, res) => {
   try {
@@ -84,7 +126,6 @@ exports.getQuestion = async (req, res) => {
 //   }
 // };
 
-
 exports.submitAnswer = async (req, res) => {
   try {
     const { answers } = req.body; // Menggunakan array answers untuk menerima jawaban serentak
@@ -93,7 +134,7 @@ exports.submitAnswer = async (req, res) => {
     const decodedToken = readPayload(token);
     const userId = decodedToken.id;
 
-    const questions = await Question.findAll({ where: { id: answers.map(answer => answer.questionId) } }); // Ambil pertanyaan berdasarkan ID
+    const questions = await Question.findAll({ where: { id: answers.map((answer) => answer.questionId) } }); // Ambil pertanyaan berdasarkan ID
 
     if (!questions || questions.length !== answers.length) {
       return res.status(404).json({ message: 'One or more questions not found' });
@@ -103,7 +144,7 @@ exports.submitAnswer = async (req, res) => {
 
     for (let i = 0; i < answers.length; i++) {
       const { questionId, selectedChoice } = answers[i];
-      const question = questions.find(q => q.id === questionId);
+      const question = questions.find((q) => q.id === questionId);
 
       if (!question) {
         return res.status(404).json({ message: `Question with ID ${questionId} not found` });
@@ -120,7 +161,7 @@ exports.submitAnswer = async (req, res) => {
 
         userScore.score = parseInt(userScore.score) + 1; // Tambahkan skor jika jawaban benar
         await userScore.save();
-        totalScore = userScore.score; 
+        totalScore = userScore.score;
       }
     }
 
@@ -274,5 +315,49 @@ exports.getRemainingTime = async (req, res) => {
     res.json({ remainingTime });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+exports.delete = async (req, res, next) => {
+  try {
+    const questionId = req.params.id;
+    const deleted = await Question.destroy({
+      where: {
+        id: questionId,
+      },
+    });
+
+    if (deleted) {
+      res.status(200).json({
+        statusCode: 200,
+        message: 'Successfully deleted',
+        data: deleted,
+      });
+    } else {
+      res.status(404).json({
+        statusCode: 404,
+        message: 'Question not found',
+      });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.createSoal = async (req, res, next) => {
+  try {
+    const body = req.body;
+    const { question, choices, correctAnswer } = body;
+    const createSoal = await Question.create({
+      question: question,
+      choices: choices,
+      correctAnswer: correctAnswer,
+    });
+    res.status(201).json({
+      statusCode: 201,
+      data: createSoal,
+    });
+  } catch (err) {
+    next(err);
   }
 };
